@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    container_name: docker-newrelic-demo
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80

@@ -1,41 +1,55 @@
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Swagger p/ minimal APIs em .NET 8
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "DockerNewRelicDemo API",
+        Version = "v1"
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.MapOpenApi();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "DockerNewRelicDemo API v1");
+    c.RoutePrefix = "swagger"; // acessa em /swagger
+});
 
 app.UseHttpsRedirection();
 
 var summaries = new[]
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    "Developer", "Assistant", "Human Resources", "DevOps", "Receptionist"
 };
 
-app.MapGet("/weatherforecast", () =>
+var names = new[]
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
+    "John", "Peter", "Robert", "Willian", "Antony", "Charlote", "Ana", "Marina", "Maria", "Mary"
+};
+
+app.MapGet("/getRandomEmployee", () =>
+{
+    var result = Enumerable.Range(1, 5).Select(_ =>
+        new RandomInfo(
+            names[Random.Shared.Next(names.Length)],
+            Random.Shared.Next(18, 55),
             summaries[Random.Shared.Next(summaries.Length)]
         ))
         .ToArray();
-    return forecast;
+
+    return Results.Ok(result);
 })
-.WithName("GetWeatherForecast");
+.WithName("GetRandomEmployee")
+.WithOpenApi(); // garante que aparece no Swagger
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+record RandomInfo(string Name, int Age, string? Summary);
