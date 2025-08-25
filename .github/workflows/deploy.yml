@@ -1,0 +1,26 @@
+name: Build and Run Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-run:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: docker build -t dotnet-newrelic-demo .
+
+    - name: Run container
+      run: |
+        docker stop dotnet-demo || true
+        docker rm dotnet-demo || true
+        docker run -d -p 5000:5000 --name dotnet-demo `
+          -e NEW_RELIC_LICENSE_KEY="${{ secrets.NEW_RELIC_LICENSE_KEY }}" `
+          -e NEW_RELIC_APP_NAME="DockerNewRelicDemo" `
+          dotnet-newrelic-demo

@@ -1,3 +1,6 @@
+
+ENV NEW_RELIC_LICENSE_KEY=""
+ENV NEW_RELIC_APP_NAME="DockerNewRelicDemo"
 # Use Windows Server Core base image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-windowsservercore-ltsc2022 AS base
 WORKDIR /app
@@ -14,4 +17,7 @@ RUN dotnet publish "DockerNewRelicDemo.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+EXPOSE 5000
 ENTRYPOINT ["dotnet", "DockerNewRelicDemo.dll"]
+
+

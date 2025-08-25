@@ -1,6 +1,14 @@
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+var newRelicKey = Environment.GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY");
+var newRelicAppName = Environment.GetEnvironmentVariable("NEW_RELIC_APP_NAME");
+
+if (!string.IsNullOrEmpty(newRelicKey))
+{
+    Console.WriteLine($"New Relic Agent ativado para o app: {newRelicAppName}");
+    // Aqui você poderia inicializar o agente via API do New Relic, se necessário
+}
 
 // Swagger p/ minimal APIs em .NET 8
 builder.Services.AddEndpointsApiExplorer();
